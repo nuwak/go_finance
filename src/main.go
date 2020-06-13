@@ -10,16 +10,19 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"igor.local/go/financ/src/binance"
+	"igor.local/go/financ/src/yahoo"
 )
 
 func main() {
 	// USD()
 	Forex("USD RUB", "USD/RUB")
-	Yahoo("BZQ20.NYM", "BRENT")
-	Crypto()
-	Yahoo("ZM", "")
-	Yahoo("NVDA", "")
-	Yahoo("^GSPC", "S&P500")
+	yahoo.FromChart("BZQ20.NYM", "BRENT")
+	binance.Crypto()
+	yahoo.FromChart("ZM", "")
+	yahoo.FromChart("NVDA", "")
+	yahoo.FromChart("^GSPC", "S&P500")
 }
 
 func USD() {
@@ -52,52 +55,6 @@ func USD() {
 	}
 }
 
-func FetchGet(url string, msg *interface{}) {
-}
-
-func Crypto() {
-	type Item struct {
-		Symbol  string  `json:"s"`
-		Current float64 `json:"c"`
-	}
-
-	type Currency struct {
-		Data []Item `json:data`
-	}
-
-	var msg Currency
-
-	url := "https://www.binance.com/exchange-api/v1/public/asset-service/product/get-products"
-
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	json.Unmarshal(body, &msg)
-
-	count := 0
-
-	for _, v := range msg.Data {
-		if contains([]interface{}{"BTCUSDT", "ETHUSDT", "LTCUSDT"}, v.Symbol) {
-			fmt.Printf("%-10s: %.2f\n", v.Symbol, v.Current)
-			count++
-		}
-
-		if count == 3 {
-			break
-		}
-	}
-
-}
-
 func Yahoo(symbol string, alias string) {
 
 	var name string
@@ -108,20 +65,14 @@ func Yahoo(symbol string, alias string) {
 		name = symbol
 	}
 
-	type Curr struct {
-		RegularMarketPrice float32 `json:regularMarketPrice`
-	}
-
-	type Meta struct {
-		Meta Curr `json:meta`
-	}
-
-	type Res struct {
-		Result []Meta `json:result`
-	}
-
 	type Symbol struct {
-		Chart Res `json:chart`
+		Chart struct {
+			Result []struct {
+				Meta struct {
+					RegularMarketPrice float32 `json:"regularMarketPrice"`
+				} `json:"meta"`
+			} `json:"result"`
+		} `json:"chart"`
 	}
 
 	query := "https://query1.finance.yahoo.com/v8/finance/chart/?symbol=%s&period1=%s&period2=%s&interval=1m"
@@ -194,6 +145,11 @@ func Forex(symbol string, alias string) {
 	req.Header.Add("Cookie", "ForexNetworkPool_15-sitecore_SCD_pool_443=MKMNACAK; forex_us#lang=en")
 
 	res, err := client.Do(req)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 
@@ -206,9 +162,9 @@ func Forex(symbol string, alias string) {
 	fmt.Printf("%-10s: %g\n", name, val)
 }
 
-func contains(arr []interface{}, str interface{}) bool {
+func contains(arr []interface{}, val interface{}) bool {
 	for _, a := range arr {
-		if a == str {
+		if a == val {
 			return true
 		}
 	}
