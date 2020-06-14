@@ -9,8 +9,6 @@ import (
 	"strconv"
 	"strings"
 
-	"database/sql"
-
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/nuwak/go_finance/src/binance"
 	"github.com/nuwak/go_finance/src/libs"
@@ -18,7 +16,7 @@ import (
 )
 
 func main() {
-	initDB()
+	db.initDB()
 	// USD()
 	Forex("USD RUB", "USD/RUB")
 	yahoo.FromChart("BZQ20.NYM", "BRENT")
@@ -26,30 +24,6 @@ func main() {
 	yahoo.FromChart("ZM", "")
 	yahoo.FromChart("NVDA", "")
 	yahoo.FromChart("^GSPC", "S&P500")
-}
-
-func initDB() {
-	database, err := sql.Open("sqlite3", "./fin.db")
-
-	if err != nil {
-		panic(err)
-	}
-
-	statement, err := database.Prepare(`
-	CREATE TABLE IF NOT EXISTS history
-		(
-			id INTEGER PRIMARY KEY,
-			symbol CHARACTER,
-			value DECIMAL(10,2),
-			first DATE
-		)
-	`)
-
-	if err != nil {
-		panic(err)
-	}
-
-	statement.Exec()
 }
 
 func USD() {
