@@ -17,7 +17,17 @@ type Api struct {
 	urlTemplate string
 	symbol      string
 	alias       string
-	data        data
+	name        string
+	value       float64
+	data        struct {
+		Chart struct {
+			Result []struct {
+				Meta struct {
+					RegularMarketPrice float64 `json:"regularMarketPrice"`
+				} `json:"meta"`
+			} `json:"result"`
+		} `json:"chart"`
+	}
 }
 
 func NewApi(symbol string, alias string) Api {
@@ -25,6 +35,7 @@ func NewApi(symbol string, alias string) Api {
 	api.urlTemplate = "https://query1.finance.yahoo.com/v8/finance/chart/?symbol=%s&period1=%s&period2=%s&interval=1m"
 	api.symbol = symbol
 	api.alias = alias
+	api.name = api.Name()
 
 	return api
 }
@@ -39,7 +50,7 @@ func (api *Api) getURL() string {
 	)
 }
 
-func (api *Api) name() string {
+func (api *Api) Name() string {
 	if api.alias != "" {
 		return api.alias
 	}
@@ -63,25 +74,17 @@ func (api *Api) getData() {
 	}
 
 	json.Unmarshal(body, &api.data)
+
+	api.value = api.Value()
 }
 
-func (api *Api) value() float64 {
+func (api *Api) Value() float64 {
 	return api.data.Chart.Result[0].Meta.RegularMarketPrice
-}
-
-type data struct {
-	Chart struct {
-		Result []struct {
-			Meta struct {
-				RegularMarketPrice float64 `json:"regularMarketPrice"`
-			} `json:"meta"`
-		} `json:"result"`
-	} `json:"chart"`
 }
 
 func FromChart(symbol string, alias string) {
 	api := NewApi(symbol, alias)
 	api.getData()
 
-	libs.Print(api.name(), api.value())
+	libs.Print(&api.name, &api.value)
 }

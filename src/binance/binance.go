@@ -2,7 +2,6 @@ package binance
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -46,7 +45,8 @@ func Crypto() {
 
 	for _, v := range msg.Data {
 		if libs.Contains([]interface{}{"BTCUSDT", "ETHUSDT", "LTCUSDT"}, v.Symbol) {
-			fmt.Printf("%-10s: %.2f\n", v.Symbol, v.Current)
+
+			libs.Print(&v.Symbol, &v.Current)
 			count++
 		}
 
