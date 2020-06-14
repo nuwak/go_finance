@@ -5,6 +5,7 @@ import (
 	"math"
 	"time"
 
+	"github.com/nuwak/go_finance/src/config"
 	"github.com/nuwak/go_finance/src/db"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -50,6 +51,21 @@ func Print(name *string, value *float64) {
 	} else {
 		diff = math.Round((*value-yesterdayVal)*100) / 100
 		change = (math.Round(diff / *value * 10000)) / 100
-		fmt.Printf("%-10s: %-10g  | %8g | %6g \n", *name, *value, diff, change)
+		if portfolioItem, ok := config.Portfolio[*name]; ok {
+			portfolioDiff := math.Round((*value-portfolioItem.Price)*100) / 100
+			portfolioProfit := math.Round(portfolioDiff/portfolioItem.Price*10000) / 100
+
+			fmt.Printf(
+				"%-10s: %-10g  | %8g | %6g | %6g | %8g\n",
+				*name,
+				*value,
+				diff,
+				change,
+				portfolioProfit,
+				portfolioDiff,
+			)
+		} else {
+			fmt.Printf("%-10s: %-10g  | %8g | %6g \n", *name, *value, diff, change)
+		}
 	}
 }

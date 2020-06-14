@@ -11,6 +11,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/nuwak/go_finance/src/binance"
+	"github.com/nuwak/go_finance/src/config"
 	"github.com/nuwak/go_finance/src/db"
 	"github.com/nuwak/go_finance/src/libs"
 	"github.com/nuwak/go_finance/src/yahoo"
@@ -18,6 +19,7 @@ import (
 
 func main() {
 	db.InitDB()
+	config.SetPortfolio()
 	// USD()
 	Forex("USD RUB", "USD/RUB")
 	yahoo.FromChart("BZQ20.NYM", "BRENT")
