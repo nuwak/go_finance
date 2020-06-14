@@ -12,9 +12,9 @@ import (
 	"database/sql"
 
 	_ "github.com/mattn/go-sqlite3"
-	"igor.local/go/financ/src/binance"
-	"igor.local/go/financ/src/libs"
-	"igor.local/go/financ/src/yahoo"
+	"github.com/nuwak/go_finance/src/binance"
+	"github.com/nuwak/go_finance/src/libs"
+	"github.com/nuwak/go_finance/src/yahoo"
 )
 
 func main() {
@@ -50,17 +50,6 @@ func initDB() {
 	}
 
 	statement.Exec()
-	// statement, _ = database.Prepare("INSERT INTO history (symbol, value, first) VALUES (?, ?, ?)")
-	// statement.Exec("BTCUSDT", 9400.03, "2020-01-02")
-	// rows, _ := database.Query("SELECT * FROM history")
-	// var id int
-	// var symbol string
-	// var value float64
-	// var first string
-	// for rows.Next() {
-	// 	rows.Scan(&id, &symbol, &value, &first)
-	// 	fmt.Println(id, ": ", symbol, " ", value, " ", first)
-	// }
 }
 
 func USD() {

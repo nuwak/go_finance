@@ -1,4 +1,4 @@
-module igor.local/go/financ
+module github.com/nuwak/go_finance
 
 go 1.14
 

@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"igor.local/go/financ/src/libs"
+	"github.com/nuwak/go_finance/src/libs"
 )
 
 type Api struct {
