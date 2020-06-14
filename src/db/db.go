@@ -8,8 +8,10 @@ import (
 
 var DB *sql.DB
 
-func initDB() {
-	DB, err := sql.Open("sqlite3", "./fin.db")
+func InitDB() {
+	var err error
+
+	DB, err = sql.Open("sqlite3", "./fin.db")
 
 	if err != nil {
 		panic(err)

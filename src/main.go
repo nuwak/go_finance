@@ -11,12 +11,13 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/nuwak/go_finance/src/binance"
+	"github.com/nuwak/go_finance/src/db"
 	"github.com/nuwak/go_finance/src/libs"
 	"github.com/nuwak/go_finance/src/yahoo"
 )
 
 func main() {
-	db.initDB()
+	db.InitDB()
 	// USD()
 	Forex("USD RUB", "USD/RUB")
 	yahoo.FromChart("BZQ20.NYM", "BRENT")
