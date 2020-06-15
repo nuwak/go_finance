@@ -2,11 +2,8 @@ package libs
 
 import (
 	"fmt"
+	"github.com/nuwak/go_finance/src/db/services"
 	"math"
-	"time"
-
-	"github.com/nuwak/go_finance/src/config"
-	"github.com/nuwak/go_finance/src/db"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -20,52 +17,52 @@ func Contains(arr []interface{}, str interface{}) bool {
 	return false
 }
 
-func Print(name *string, value *float64) {
-	var yesterdayVal float64
-	var todayVal float64
+func Print(symbol *string, value *float64) {
 	var diff float64
 	var change float64
 
-	today := time.Now().Format("2006-01-02")
-	yesterday := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
-	db.DB.
-		QueryRow("SELECT value FROM history where symbol = ? and first = ? order by first desc limit 1", *name, yesterday).
-		Scan(&yesterdayVal)
-	db.DB.
-		QueryRow("SELECT value FROM history where symbol = ? and first = ? order by first desc limit 1", *name, today).
-		Scan(&todayVal)
+	yesterdayVal := services.History().GetValue(symbol, false)
+	todayVal := services.History().GetValue(symbol, true)
 
 	if todayVal == 0 {
-		statement, _ := db.DB.Prepare("INSERT INTO history (symbol, value, first) VALUES (?, ?, ?)")
-		statement.Exec(*name, *value, time.Now().Format("2006-01-02"))
+		services.History().AddValue(symbol, value)
 	}
 
 	if yesterdayVal == 0 {
 		if todayVal == 0 {
-			fmt.Printf("%-10s: %g\n", *name, *value)
+			fmt.Printf("%-10s: %g\n", *symbol, *value)
 		} else {
 			diff = math.Round((*value-todayVal)*100) / 100
 			change = (math.Round(diff / *value * 10000)) / 100
-			fmt.Printf("%-10s: %-10g  | %8g | %6g \n", *name, *value, diff, change)
+			fmt.Printf("%-10s: %-10g  | %8g | %6g \n", *symbol, *value, diff, change)
 		}
 	} else {
 		diff = math.Round((*value-yesterdayVal)*100) / 100
 		change = (math.Round(diff / *value * 10000)) / 100
-		if portfolioItem, ok := config.Portfolio[*name]; ok {
-			portfolioDiff := math.Round((*value-portfolioItem.Price)*100) / 100
-			portfolioProfit := math.Round(portfolioDiff/portfolioItem.Price*10000) / 100
+		if portfolioItem, err := services.Portfolio().GetValue(symbol); err == nil {
+			portfolioPriceDiff := *value - portfolioItem.Price
+			portfolioVolume := portfolioItem.Volume * portfolioItem.Price
+			portfolioCurrentValue := portfolioItem.Volume * *value
+			portfolioValueDiff := portfolioCurrentValue - portfolioVolume
+			portfolioProfitPercent := portfolioValueDiff / portfolioVolume * 100
 
 			fmt.Printf(
-				"%-10s: %-10g  | %8g | %6g | %6g | %8g\n",
-				*name,
+				"%-10s: %-10g  | %8g | %6g | %6g | %8g | %8g | %8g\n",
+				*symbol,
 				*value,
 				diff,
 				change,
-				portfolioProfit,
-				portfolioDiff,
+				Round(portfolioProfitPercent),
+				Round(portfolioValueDiff),
+				Round(portfolioVolume),
+				Round(portfolioPriceDiff),
 			)
 		} else {
-			fmt.Printf("%-10s: %-10g  | %8g | %6g \n", *name, *value, diff, change)
+			fmt.Printf("%-10s: %-10g  | %8g | %6g \n", *symbol, *value, diff, change)
 		}
 	}
+}
+
+func Round(val float64) float64 {
+	return math.Round(val*100) / 100
 }
