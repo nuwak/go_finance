@@ -42,6 +42,7 @@ func Print(symbol *string, value *float64) {
 		change = (math.Round(diff / *value * 10000)) / 100
 		if portfolioItem, err := services.Portfolio().GetValue(symbol); err == nil {
 			portfolio := services.Portfolio().CalcProfitItem(portfolioItem, value)
+			services.Portfolio().CalcTotal(portfolio)
 
 			total["profitPercent"] += portfolio["profitPercent"]
 			total["valueDiff"] += portfolio["valueDiff"]

@@ -47,8 +47,6 @@ func (portfolio *PortfolioStruct) CalcProfitItem(prev *PortfolioItem, current *f
 	res["valueDiff"] = res["currentValue"] - res["volume"]
 	res["profitPercent"] = res["valueDiff"] / res["volume"] * 100
 
-	portfolio.CalcTotal(res)
-
 	return res
 }
 
