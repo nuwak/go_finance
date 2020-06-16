@@ -3,6 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/nuwak/go_finance/src/binance"
+	"github.com/nuwak/go_finance/src/db"
+	"github.com/nuwak/go_finance/src/db/services"
+	"github.com/nuwak/go_finance/src/yahoo"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -10,21 +14,28 @@ import (
 	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/nuwak/go_finance/src/binance"
-	"github.com/nuwak/go_finance/src/db"
 	"github.com/nuwak/go_finance/src/libs"
-	"github.com/nuwak/go_finance/src/yahoo"
 )
 
 func main() {
+	// for t9
+	//wordPtr := flag.String("word", "foo", "a string")
+	//flag.Parse()
+	//fmt.Println(*wordPtr)
 	db.InitDB()
-	// USD()
 	Forex("USD RUB", "USD/RUB")
 	yahoo.FromChart("BZQ20.NYM", "BRENT")
 	binance.Crypto()
 	yahoo.FromChart("ZM", "")
 	yahoo.FromChart("NVDA", "")
 	yahoo.FromChart("^GSPC", "S&P500")
+
+	fmt.Printf(
+		"%52g | %8g | %8g \n",
+		libs.Round(services.Portfolio().Total["profitPercent"]),
+		libs.Round(services.Portfolio().Total["valueDiff"]),
+		libs.Round(services.Portfolio().Total["volume"]),
+	)
 }
 
 func USD() {

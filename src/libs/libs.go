@@ -20,6 +20,7 @@ func Contains(arr []interface{}, str interface{}) bool {
 func Print(symbol *string, value *float64) {
 	var diff float64
 	var change float64
+	total := make(map[string]float64)
 
 	yesterdayVal := services.History().GetValue(symbol, false)
 	todayVal := services.History().GetValue(symbol, true)
@@ -40,11 +41,11 @@ func Print(symbol *string, value *float64) {
 		diff = math.Round((*value-yesterdayVal)*100) / 100
 		change = (math.Round(diff / *value * 10000)) / 100
 		if portfolioItem, err := services.Portfolio().GetValue(symbol); err == nil {
-			portfolioPriceDiff := *value - portfolioItem.Price
-			portfolioVolume := portfolioItem.Volume * portfolioItem.Price
-			portfolioCurrentValue := portfolioItem.Volume * *value
-			portfolioValueDiff := portfolioCurrentValue - portfolioVolume
-			portfolioProfitPercent := portfolioValueDiff / portfolioVolume * 100
+			portfolio := services.Portfolio().CalcProfitItem(portfolioItem, value)
+
+			total["profitPercent"] += portfolio["profitPercent"]
+			total["valueDiff"] += portfolio["valueDiff"]
+			total["volume"] += portfolio["volume"]
 
 			fmt.Printf(
 				"%-10s: %-10g  | %8g | %6g | %6g | %8g | %8g | %8g\n",
@@ -52,10 +53,10 @@ func Print(symbol *string, value *float64) {
 				*value,
 				diff,
 				change,
-				Round(portfolioProfitPercent),
-				Round(portfolioValueDiff),
-				Round(portfolioVolume),
-				Round(portfolioPriceDiff),
+				Round(portfolio["profitPercent"]),
+				Round(portfolio["valueDiff"]),
+				Round(portfolio["volume"]),
+				Round(portfolio["priceDiff"]),
 			)
 		} else {
 			fmt.Printf("%-10s: %-10g  | %8g | %6g \n", *symbol, *value, diff, change)
