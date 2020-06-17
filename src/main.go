@@ -8,7 +8,6 @@ import (
 	"github.com/nuwak/go_finance/src/db/services"
 	"github.com/nuwak/go_finance/src/yahoo"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -24,6 +23,7 @@ func main() {
 	//fmt.Println(*wordPtr)
 	db.InitDB()
 	Forex("USD RUB", "USD/RUB")
+	yahoo.FromChart("AFKS.ME", "AFKS.ME")
 	yahoo.FromChart("BZQ20.NYM", "BRENT")
 	binance.Crypto()
 	yahoo.FromChart("ZM", "")
@@ -32,41 +32,48 @@ func main() {
 
 	fmt.Printf(
 		"%52g | %8g | %8g \n",
-		libs.Round(services.Portfolio().Total["profitPercent"]),
-		libs.Round(services.Portfolio().Total["valueDiff"]),
-		libs.Round(services.Portfolio().Total["volume"]),
+		libs.Round(services.Portfolio().Total[services.USD]["profitPercent"]),
+		libs.Round(services.Portfolio().Total[services.USD]["valueDiff"]),
+		libs.Round(services.Portfolio().Total[services.USD]["volume"]),
+	)
+
+	fmt.Printf(
+		"%52g | %8g | %8g \n",
+		libs.Round(services.Portfolio().Total[services.RUB]["profitPercent"]),
+		libs.Round(services.Portfolio().Total[services.RUB]["valueDiff"]),
+		libs.Round(services.Portfolio().Total[services.RUB]["volume"]),
 	)
 }
 
-func USD() {
-	type Curr struct {
-		Code string  `json:code`
-		Rate float32 `json:rate`
-	}
-
-	var msg []Curr
-
-	resp, err := http.Get("https://marketdata-marketplace.moex.com/api/securities?category=currencies")
-
-	defer resp.Body.Close()
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	json.Unmarshal(body, &msg)
-	for _, v := range msg {
-		if v.Code == "USD/RUB" {
-			fmt.Printf("%-10s: %.2f\n", "USDRUB", v.Rate)
-			break
-		}
-	}
-}
+//func USD() {
+//	type Curr struct {
+//		Code string  `json:code`
+//		Rate float32 `json:rate`
+//	}
+//
+//	var msg []Curr
+//
+//	resp, err := http.Get("https://marketdata-marketplace.moex.com/api/securities?category=currencies")
+//
+//	defer resp.Body.Close()
+//
+//	if err != nil {
+//		log.Fatalln(err)
+//	}
+//
+//	body, err := ioutil.ReadAll(resp.Body)
+//	if err != nil {
+//		log.Fatalln(err)
+//	}
+//
+//	json.Unmarshal(body, &msg)
+//	for _, v := range msg {
+//		if v.Code == "USD/RUB" {
+//			fmt.Printf("%-10s: %.2f\n", "USDRUB", v.Rate)
+//			break
+//		}
+//	}
+//}
 
 func Forex(symbol string, alias string) {
 	var name string

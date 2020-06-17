@@ -20,10 +20,10 @@ func Contains(arr []interface{}, str interface{}) bool {
 func Print(symbol *string, value *float64) {
 	var diff float64
 	var change float64
-	total := make(map[string]float64)
 
 	yesterdayVal := services.History().GetValue(symbol, false)
 	todayVal := services.History().GetValue(symbol, true)
+	//symbolModel, _ := services.Symbol().Get(symbol)
 
 	if todayVal == 0 {
 		services.History().AddValue(symbol, value)
@@ -44,20 +44,16 @@ func Print(symbol *string, value *float64) {
 			portfolio := services.Portfolio().CalcProfitItem(portfolioItem, value)
 			services.Portfolio().CalcTotal(portfolio)
 
-			total["profitPercent"] += portfolio["profitPercent"]
-			total["valueDiff"] += portfolio["valueDiff"]
-			total["volume"] += portfolio["volume"]
-
 			fmt.Printf(
 				"%-10s: %-10g  | %8g | %6g | %6g | %8g | %8g | %8g\n",
 				*symbol,
 				*value,
 				diff,
 				change,
-				Round(portfolio["profitPercent"]),
-				Round(portfolio["valueDiff"]),
-				Round(portfolio["volume"]),
-				Round(portfolio["priceDiff"]),
+				Round(portfolio.ProfitPercent),
+				Round(portfolio.ValueDiff),
+				Round(portfolio.Volume),
+				Round(portfolio.PriceDiff),
 			)
 		} else {
 			fmt.Printf("%-10s: %-10g  | %8g | %6g \n", *symbol, *value, diff, change)

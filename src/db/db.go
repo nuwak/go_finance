@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS portfolio
     close_dt    DATETIME,
     is_close    BOOLEAN  default 0,
     close_price DECIMAL(16, 8),
-    update_dt   DATETIME
+    update_dt   DATETIME,
+    currency    SMALLINT default 1
 );
 
 	`)
