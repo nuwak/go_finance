@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"github.com/nuwak/go_finance/src/db"
+	"github.com/nuwak/go_finance/src/libs/mat"
 	"log"
 )
 
@@ -92,13 +93,14 @@ func (portfolio *PortfolioStruct) Sell(symbol *string, price *float64, volume *f
 			sell.idEqual = row.id
 		} else if row.volume > *volume {
 			sell.idMore = row.id
-			sell.volume = row.volume
-			sell.price = row.price
-			sell.openDt = row.openDt
-			sell.currency = row.currency
 		}
 
-		log.Println(row)
+		sell.volume = row.volume
+		sell.price = row.price
+		sell.openDt = row.openDt
+		sell.currency = row.currency
+
+		fmt.Println(row)
 
 		sell.total += row.volume
 	}
@@ -107,7 +109,7 @@ func (portfolio *PortfolioStruct) Sell(symbol *string, price *float64, volume *f
 		log.Fatalln("Not enough Volume")
 	}
 
-	log.Println(sell)
+	fmt.Println(sell)
 
 	if sell.idEqual != 0 {
 		stmt, err := db.DB.Prepare(`
@@ -128,7 +130,8 @@ func (portfolio *PortfolioStruct) Sell(symbol *string, price *float64, volume *f
 			log.Fatal(err)
 		}
 
-		fmt.Println(res)
+		fmt.Println("Profit: ", mat.RoundAcc(*price-sell.price, 8))
+		fmt.Println(res.RowsAffected())
 	} else if sell.idMore != 0 {
 		stmt, err := db.DB.Prepare(`
 		UPDATE portfolio SET 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/nuwak/go_finance/src/db/services"
 	"github.com/nuwak/go_finance/src/libs"
+	"github.com/nuwak/go_finance/src/libs/mat"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -28,16 +29,16 @@ func GetQuote() {
 func PrintQuote() {
 	fmt.Printf(
 		"%52g | %8g | %8g \n",
-		libs.Round(services.Portfolio().Total[services.USD]["profitPercent"]),
-		libs.Round(services.Portfolio().Total[services.USD]["valueDiff"]),
-		libs.Round(services.Portfolio().Total[services.USD]["volume"]),
+		mat.Round(services.Portfolio().Total[services.USD]["profitPercent"]),
+		mat.Round(services.Portfolio().Total[services.USD]["valueDiff"]),
+		mat.Round(services.Portfolio().Total[services.USD]["volume"]),
 	)
 
 	fmt.Printf(
 		"%52g | %8g | %8g \n",
-		libs.Round(services.Portfolio().Total[services.RUB]["profitPercent"]),
-		libs.Round(services.Portfolio().Total[services.RUB]["valueDiff"]),
-		libs.Round(services.Portfolio().Total[services.RUB]["volume"]),
+		mat.Round(services.Portfolio().Total[services.RUB]["profitPercent"]),
+		mat.Round(services.Portfolio().Total[services.RUB]["valueDiff"]),
+		mat.Round(services.Portfolio().Total[services.RUB]["volume"]),
 	)
 }
 

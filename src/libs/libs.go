@@ -3,6 +3,7 @@ package libs
 import (
 	"fmt"
 	"github.com/nuwak/go_finance/src/db/services"
+	"github.com/nuwak/go_finance/src/libs/mat"
 	"math"
 )
 
@@ -47,17 +48,13 @@ func Print(symbol *string, value *float64) {
 				*value,
 				diff,
 				change,
-				Round(portfolio.ProfitPercent),
-				Round(portfolio.ValueDiff),
-				Round(portfolio.Volume),
-				Round(portfolio.PriceDiff),
+				mat.Round(portfolio.ProfitPercent),
+				mat.Round(portfolio.ValueDiff),
+				mat.Round(portfolio.Volume),
+				mat.Round(portfolio.PriceDiff),
 			)
 		} else {
 			fmt.Printf("%-10s: %-10g  | %8g | %6g \n", *symbol, *value, diff, change)
 		}
 	}
-}
-
-func Round(val float64) float64 {
-	return math.Round(val*100) / 100
 }
