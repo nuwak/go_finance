@@ -55,7 +55,7 @@ func (portfolio *PortfolioStruct) Buy(symbol *string, price *float64, volume *fl
 		log.Fatal(err)
 	}
 
-	fmt.Println(res)
+	fmt.Println(res.LastInsertId())
 }
 
 func (portfolio *PortfolioStruct) Sell(symbol *string, price *float64, volume *float64) {

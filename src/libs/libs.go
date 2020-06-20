@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"github.com/nuwak/go_finance/src/db/services"
 	"math"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func Contains(arr []interface{}, str interface{}) bool {
@@ -23,7 +21,6 @@ func Print(symbol *string, value *float64) {
 
 	yesterdayVal := services.History().GetValue(symbol, false)
 	todayVal := services.History().GetValue(symbol, true)
-	//symbolModel, _ := services.Symbol().Get(symbol)
 
 	if todayVal == 0 {
 		services.History().AddValue(symbol, value)
