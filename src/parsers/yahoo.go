@@ -1,4 +1,4 @@
-package yahoo
+package parsers
 
 import (
 	"encoding/json"
@@ -82,7 +82,7 @@ func (api *Api) Value() float64 {
 	return api.data.Chart.Result[0].Meta.RegularMarketPrice
 }
 
-func FromChart(symbol string, alias string) {
+func YahooGet(symbol string, alias string) {
 	api := NewApi(symbol, alias)
 	api.getData()
 

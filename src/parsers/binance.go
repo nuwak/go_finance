@@ -1,4 +1,4 @@
-package binance
+package parsers
 
 import (
 	"encoding/json"
@@ -35,7 +35,7 @@ func FetchGet(url string, msg *Currency) {
 	json.Unmarshal(body, &msg)
 }
 
-func Crypto() {
+func BinanceGet() {
 	var msg Currency
 	url := "https://www.binance.com/exchange-api/v1/public/asset-service/product/get-products"
 

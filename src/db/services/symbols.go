@@ -19,7 +19,7 @@ type SymbolsStruct struct{}
 
 var symbol *SymbolsStruct
 
-func Symbol() *SymbolsStruct {
+func Symbols() *SymbolsStruct {
 	if symbol == nil {
 		symbol = &SymbolsStruct{}
 	}
