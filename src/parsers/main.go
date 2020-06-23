@@ -25,6 +25,7 @@ func GetQuote() {
 	BinanceGet()
 	YahooGet("ZM", "")
 	YahooGet("NVDA", "")
+	YahooGet("MSFT", "")
 
 	if int(weekday) != 0 && int(weekday) != 6 && openNY.After(now) {
 		p("future")

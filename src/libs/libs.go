@@ -33,28 +33,32 @@ func Print(symbol *string, value *float64) {
 		} else {
 			diff = math.Round((*value-todayVal)*100) / 100
 			change = (math.Round(diff / *value * 10000)) / 100
-			fmt.Printf("%-10s: %-10g  | %8g | %6g \n", *symbol, *value, diff, change)
+			printResult(symbol, value, &diff, &change)
 		}
 	} else {
 		diff = math.Round((*value-yesterdayVal)*100) / 100
 		change = (math.Round(diff / *value * 10000)) / 100
-		if portfolioItem, err := services.Portfolio().GetValue(symbol); err == nil {
-			portfolio := services.Portfolio().CalcProfitItem(portfolioItem, value)
-			services.Portfolio().CalcTotal(portfolio)
+		printResult(symbol, value, &diff, &change)
+	}
+}
 
-			fmt.Printf(
-				"%-10s: %-10g  | %8g | %6g | %6g | %8g | %8g | %8g\n",
-				*symbol,
-				*value,
-				diff,
-				change,
-				mat.Round(portfolio.ProfitPercent),
-				mat.Round(portfolio.ValueDiff),
-				mat.Round(portfolio.Volume),
-				mat.Round(portfolio.PriceDiff),
-			)
-		} else {
-			fmt.Printf("%-10s: %-10g  | %8g | %6g \n", *symbol, *value, diff, change)
-		}
+func printResult(symbol *string, value *float64, diff *float64, change *float64) {
+	if portfolioItem, err := services.Portfolio().GetResult(symbol); err == nil {
+		portfolio := services.Portfolio().CalcProfitItem(portfolioItem, value)
+		services.Portfolio().CalcTotal(portfolio)
+
+		fmt.Printf(
+			"%-10s: %-10g  | %8g | %6g | %6g | %8g | %8g | %8g\n",
+			*symbol,
+			*value,
+			*diff,
+			*change,
+			mat.Round(portfolio.ProfitPercent),
+			mat.Round(portfolio.ValueDiff),
+			mat.Round(portfolio.Volume),
+			mat.Round(portfolio.PriceDiff),
+		)
+	} else {
+		fmt.Printf("%-10s: %-10g  | %8g | %6g \n", *symbol, *value, *diff, *change)
 	}
 }

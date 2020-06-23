@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 	"github.com/nuwak/go_finance/src/db"
 	"github.com/nuwak/go_finance/src/libs/mat"
@@ -42,6 +43,35 @@ func (portfolio *PortfolioStruct) GetValue(symbol *string) (*PortfolioItem, erro
 	}
 
 	return item, nil
+}
+
+func (portfolio *PortfolioStruct) GetResult(symbol *string) (*PortfolioItem, error) {
+	rows, err := db.DB.Query("select id, volume, open_price, currency from portfolio where symbol = ? and is_close = 0", symbol)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var total float64
+	res := &PortfolioItem{}
+	res.Price = 0
+	for rows.Next() {
+		row := &PortfolioItem{}
+		if err := rows.Scan(&row.id, &row.Volume, &row.Price, &row.Currency); err != nil {
+			return res, err
+		}
+
+		res.Currency = row.Currency
+		res.Volume += row.Volume
+		total += row.Volume * row.Price
+	}
+
+	if res.Volume == 0 {
+		return res, errors.New("None item in portfolio")
+	}
+	res.Price = total / res.Volume
+
+	return res, nil
 }
 
 func (portfolio *PortfolioStruct) Buy(symbol *string, price *float64, volume *float64, currency *Currency) {
